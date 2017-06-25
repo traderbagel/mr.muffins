@@ -7,9 +7,7 @@ from linebot import (
     LineBotApi, WebhookHandler
 )
 
-from linebot.exceptions import (
-    InvalidSignatureError
-)
+import linebot.exceptions
 
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
@@ -49,7 +47,7 @@ def callback():
     # handle webhook body
     try:
         handler.handle(body, signature)
-    except InvalidSignatureError:
+    except linebot.exceptions.InvalidSignatureError:
         abort(400)
 
     return 'OK'
@@ -60,11 +58,12 @@ def handle_message(event):
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=event.message.text)) 
-    except LineBotApiError as e:
+    except linebot.exceptions.LineBotApiError as e:
         print(e.status_code)
         print(e.error.message)
         print(e.error.details)
-        
+        abort(200)
+
 if __name__ == '__main__':
     # http://kennmyers.github.io/tutorial/2016/03/11/getting-flask-on-heroku.html
     app.debug=True
