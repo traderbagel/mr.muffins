@@ -59,5 +59,7 @@ def sendText(user, text):
     r = requests.post(LINE_API, headers=headers, data=data)
 
 if __name__ == '__main__':
+    # http://kennmyers.github.io/tutorial/2016/03/11/getting-flask-on-heroku.html
+    app.debug=True
     port = int(os.environ.get('PORT', 5000))
-    app.run(debug=True, port=port)
+    app.run(host='0.0.0.0', port=port)
