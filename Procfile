@@ -1,2 +1,2 @@
-heroku ps:scale web=1
+heroku scale web=1
 python app.py
