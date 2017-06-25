@@ -10,7 +10,7 @@ from linebot import (
 import linebot.exceptions
 
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
+    MessageEvent, TextMessage, TextSendMessage, LocationMessage
 )
 
 app = Flask(__name__)
@@ -55,14 +55,22 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     try:
+        app.logger.info("Location event: " + event.message)
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=event.message.text)) 
     except linebot.exceptions.LineBotApiError as e:
-        print(e.status_code)
-        print(e.error.message)
-        print(e.error.details)
-        abort(200)
+        abort(400)
+
+@handler.add(MessageEvent, message=LocationMessage)
+def handle_message(event):
+    try:
+        app.logger.info("Location event: " + event.message.latitude)
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=event.message))
+    except linebot.exceptions.LineBotApiError as e:
+        abort(400)
 
 if __name__ == '__main__':
     # http://kennmyers.github.io/tutorial/2016/03/11/getting-flask-on-heroku.html
