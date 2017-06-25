@@ -26,8 +26,8 @@ def callback():
     user = decoded['result'][0]['content']['from']
     text = decoded['result'][0]['content']['text']
     #print(json_line)
-    print("使用者：",user)
-    print("內容：",text)
+    print("user:",user)
+    print("content:",text)
     sendText(user,text)
     return ''
 
@@ -55,9 +55,7 @@ def sendText(user, text):
         }
     })
 
-    #print("送出資料：",data)
     r = requests.post(LINE_API, headers=headers, data=data)
-    #print(r.text)
 
 if __name__ == '__main__':
      app.run(debug=True)
