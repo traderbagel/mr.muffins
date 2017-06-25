@@ -19,7 +19,9 @@ DATABASE_CONFIG = {
 def index():
     return "<p>Hello World!</p>"
 
-@app.route('/callback', methods=['POST'])
+
+# @app.route('/callback', methods=['POST'])
+@app.route('/', methods=['POST'])
 def callback():
     json_line = request.get_json()
     json_line = json.dumps(json_line)
