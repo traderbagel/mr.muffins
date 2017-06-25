@@ -56,11 +56,15 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=event.message.text)) 
-
-
+    try:
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=event.message.text)) 
+    except LineBotApiError as e:
+        print(e.status_code)
+        print(e.error.message)
+        print(e.error.details)
+        
 if __name__ == '__main__':
     # http://kennmyers.github.io/tutorial/2016/03/11/getting-flask-on-heroku.html
     app.debug=True
