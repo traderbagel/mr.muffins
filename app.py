@@ -55,20 +55,21 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     try:
-        app.logger.info("Location event: " + event.message)
+        reply = "love princess~" + str(event.message.text)
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=event.message.text)) 
+            TextSendMessage(text=reply[::-1])) 
     except linebot.exceptions.LineBotApiError as e:
         abort(400)
 
 @handler.add(MessageEvent, message=LocationMessage)
 def handle_message(event):
     try:
-        app.logger.info("Location event: " + event.message.latitude)
+        reply = str(event.message.latitude) + "." + str(event.message.longitude)
+        app.logger.info("Location event: " + reply)
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=event.message))
+            TextSendMessage(text=reply))
     except linebot.exceptions.LineBotApiError as e:
         abort(400)
 
