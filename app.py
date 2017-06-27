@@ -11,7 +11,7 @@ from linebot import (
 import linebot.exceptions
 
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage, LocationMessage
+    MessageEvent, TextMessage, TextSendMessage, LocationMessage, ImageSendMessage
 )
 
 app = Flask(__name__)
