@@ -1,4 +1,4 @@
-from flask import Flask, request, abort
+from flask import Flask, request, abort, send_file
 import json
 # import requests
 import urllib.request
@@ -35,11 +35,18 @@ handler = WebhookHandler(API_CONFIG['channel_secret'])
 def index():
     # import urllib.request
     # urllib.request.urlretrieve("http://www.digimouth.com/news/media/2011/09/google-logo.jpg", "local-filename.jpg")
-
     img = urllib.request.urlretrieve("http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg", "weather.jpg")
     print(img)
 
-    return "<p>Hello World!</p>"
+    # return "<p>Hello World!</p>"
+    # https://stackoverflow.com/questions/15974730/how-do-i-get-the-different-parts-of-a-flask-requests-url
+    return "~~~" + str(request.url_root)
+
+@app.route('/origin_weather')
+def get_origin_weather():
+    img = urllib.request.urlretrieve("http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg", "origin_weather.jpg")
+    # if request.args.get('type') == '1':
+    return send_file('origin_weather.jpg', mimetype='image/jpg')
 
 # https://github.com/line/line-bot-sdk-python
 @app.route('/callback', methods=['POST'])
@@ -68,8 +75,8 @@ def handle_message(event):
             line_bot_api.reply_message(
                 event.reply_token,
                 ImageSendMessage(
-                    original_content_url='http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg',
-                    preview_image_url   ='http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg'
+                    original_content_url=str(request.url_root)+'/origin_weather',
+                    preview_image_url   =str(request.url_root)+'/origin_weather'
                 )
             )
         else:
