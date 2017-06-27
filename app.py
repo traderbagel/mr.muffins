@@ -1,7 +1,7 @@
 from flask import Flask, request, abort
 import json
 # import requests
-import urllib, json
+import urllib.request
 import os 
 
 from linebot import (
@@ -33,13 +33,11 @@ handler = WebhookHandler(API_CONFIG['channel_secret'])
 
 @app.route('/')
 def index():
-    # image = urllib.urlretrieve("http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg", "test.jpg")
-    url = "http://api.tecyt.com/api/API0103Weather/Get36HoursWeather?longitude=121.512517&latitude=24.989168&weatherDataType=Hours72&weatherSupportedLanguage=ChineseTraditional"
-    
-    with urllib.request.urlopen(url) as info:
-        s = json.loads(info.read())
-    #I'm guessing this would output the html source code?
-    print(str(s["Name"]))
+    # import urllib.request
+    # urllib.request.urlretrieve("http://www.digimouth.com/news/media/2011/09/google-logo.jpg", "local-filename.jpg")
+
+    img = urllib.request.urlretrieve("http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg", "weather.jpg")
+    print(img)
 
     return "<p>Hello World!</p>"
 
@@ -66,14 +64,21 @@ def handle_message(event):
     try:
         rcv = str(event.message.text)        
         if "雨" in rcv:
-            reply = "先自己看圖片吧: " + "http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg"
+            # reply = "先自己看圖片吧: " + "http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg"
+            line_bot_api.reply_message(
+                event.reply_token,
+                ImageSendMessage(
+                    original_content_url='http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg',
+                    preview_image_url   ='http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg'
+                )
+            )
         else:
             reply = "鼻孔還在懶惰!"
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=reply))
+
         
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=reply))
-         
     except linebot.exceptions.LineBotApiError as e:
         abort(400)
 
