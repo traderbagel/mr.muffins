@@ -71,18 +71,19 @@ def handle_message(event):
     try:
         rcv = str(event.message.text)        
         if "雨" in rcv:
-            # reply = "先自己看圖片吧: " + "http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg"
-            line_bot_api.reply_message(
-                event.reply_token,
-                ImageSendMessage(
-                    original_content_url=str(request.url_root)+'/origin_weather'
-                )
-            )
+            reply = "先自己看圖片吧: " + "http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg"
+        elif "吃" in rcv or "食" in rcv:
+            reply = "鼻孔最近想吃酸酸辣辣的泰國料理"
+        elif "鼻" in rcv or "愛" in rcv:
+            reply = "愛鼻主<3<3<3"
+        elif "頭" in rcv:
+            reply = "我有頭"
         else:
             reply = "鼻孔還在懶惰!"
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text=reply))
+        
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=reply))
 
         
     except linebot.exceptions.LineBotApiError as e:
