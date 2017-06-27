@@ -1,6 +1,7 @@
 from flask import Flask, request, abort
 import json
-import requests
+# import requests
+import urllib, json
 import os 
 
 from linebot import (
@@ -32,6 +33,14 @@ handler = WebhookHandler(API_CONFIG['channel_secret'])
 
 @app.route('/')
 def index():
+    # image = urllib.urlretrieve("http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg", "test.jpg")
+    url = "http://api.tecyt.com/api/API0103Weather/Get36HoursWeather?longitude=121.512517&latitude=24.989168&weatherDataType=Hours72&weatherSupportedLanguage=ChineseTraditional"
+    
+    with urllib.request.urlopen(url) as info:
+        s = json.loads(info.read())
+    #I'm guessing this would output the html source code?
+    print(str(s["Name"]))
+
     return "<p>Hello World!</p>"
 
 # https://github.com/line/line-bot-sdk-python
@@ -55,10 +64,16 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     try:
-        reply = "love princess~" + str(event.message.text)
+        rcv = str(event.message.text)        
+        if "雨" in rcv:
+            reply = "先自己看圖片吧: " + "http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg"
+        else:
+            reply = "鼻孔還在懶惰!"
+        
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=reply[::-1])) 
+            TextSendMessage(text=reply))
+         
     except linebot.exceptions.LineBotApiError as e:
         abort(400)
 
