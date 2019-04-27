@@ -9,7 +9,6 @@ from flask import (
     abort,
 )
 
-
 from linebot.exceptions import (
     InvalidSignatureError,
     LineBotApiError,
@@ -19,21 +18,28 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, LocationMessage, ImageSendMessage
 )
 
+from muffins.line import LINE_BOT_API, LINE_HANDLER
+from muffins.solitaire import solitaire
+
+# Deploy Note
+'''
+https://dashboard.heroku.com/apps/mrmuffins/deploy/heroku-git
+
+heroku git:remote -a mrmuffins
+git push heroku master
+
+# https://yaoandy107.github.io/line-bot-tutorial/
+'''
 BP = Blueprint('root', __name__)
 
 
-@BP.route("/", method=["GET"])
+@BP.route("/", methods=["GET"])
 def index():
     # img = urllib.request.urlretrieve("http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg", "weather.jpg")
     return current_app.config.get('PAGE_TITLE')
 
-@BP.route("/origin_weather", method=["GET"])
-def get_origin_weather():
-    img = urllib.request.urlretrieve("http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg", "origin_weather.jpg")
-    return send_file('origin_weather.jpg', mimetype='image/jpg')
-
 # document: https://github.com/line/line-bot-sdk-python
-@BP.route("/callback", method=["POST"])
+@BP.route("/callback", methods=["POST"])
 def callback():
     signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
@@ -45,19 +51,21 @@ def callback():
 
     return 'OK'
 
+
+
 # Line handler
-@current_app.LINE_HANDLER.add(MessageEvent, message=TextMessage)
+@LINE_HANDLER.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
     try:
         receive_text = str(event.message.text)        
         if "雨" in receive_text or "天氣" in receive_text:
             reply = "http://opendata.cwb.gov.tw/opendata/MFC/F-C0035-015.jpg"
-        elif "吃" in receive_text or "食" in receive_text:
-            reply = "最近想吃酸酸辣辣的泰式料理"
-        elif "幹" in receive_text:
-            reply = "妹子妹子不收泣"
+        elif "玩" in receive_text:
+            reply = "玩成語接龍，開始：" + solitaire.start()
+        elif len(receive_text) == 4:
+            reply = solitaire.get_next(receive_text)
         else:
-            reply = "愛妹子!對不起！妹子不要生氣氣惹"
+            reply = "可以跟我玩成語接龍或是問我天氣"
         
         current_app.LINE_BOT_API.reply_message(
             event.reply_token,
@@ -66,7 +74,7 @@ def handle_text_message(event):
     except LineBotApiError as e:
         abort(400)
 
-@current_app.LINE_HANDLER.add(MessageEvent, message=LocationMessage)
+@LINE_HANDLER.add(MessageEvent, message=LocationMessage)
 def handle_location_message(event):
     try:
         reply = f"(lat,lng): ({event.message.latitude},{event.message.longitude})"
